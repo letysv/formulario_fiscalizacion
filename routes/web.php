@@ -41,10 +41,17 @@ Route::get('/exportar-excel', function() {
     return $controller->exportarExcel(request());
 })->name('exportar.excel');
 
-Route::get('/test-session', function() {
-    session(['test' => 'funciona']);
-    return response()->json([
-        'session_id' => session()->getId(),
-        'test_value' => session('test')
-    ]);
-});
+// TRUNCAR registros - PROTEGIDO (solo admin)
+Route::delete('/truncar-registros', function() {
+    if (!session()->has('user_id')) {
+        return response()->json(['success' => false, 'message' => 'No autorizado'], 401);
+    }
+    
+    // Verificar que sea usuario admin
+    if (session('user_usuario') !== 'admin') {
+        return response()->json(['success' => false, 'message' => 'No tienes permiso para realizar esta acción'], 403);
+    }
+    
+    $controller = new RegistroController();
+    return $controller->truncarRegistros(request());
+})->name('truncar.registros');

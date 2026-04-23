@@ -77,9 +77,66 @@ class RegistroController extends Controller
         return Excel::download($export, 'reporte_fiscalizacion_' . date('Y-m-d') . '.xlsx');
     }
     
+    // public function reporte()
+    // {
+    //     $sedes = Sede::all();
+    //     return view('registros.reporte', compact('sedes'));
+    // }
+
     public function reporte()
     {
         $sedes = Sede::all();
-        return view('registros.reporte', compact('sedes'));
+        $totalRegistros = Registro::count();
+        $registrosPorSede = [];
+        
+        foreach ($sedes as $sede) {
+            $registrosPorSede[$sede->nombre] = Registro::where('sede_id', $sede->id)->count();
+        }
+        
+        return view('registros.reporte', compact('sedes', 'totalRegistros', 'registrosPorSede'));
+    }
+
+    public function truncarRegistros(Request $request)
+    {
+        // Verificar que sea usuario admin (doble verificación)
+        if (session('user_usuario') !== 'admin') {
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No tienes permiso para realizar esta acción'
+                ], 403);
+            }
+            return redirect()->route('registros.reporte')->with('error', 'No tienes permiso para realizar esta acción');
+        }
+        
+        $totalEliminados = Registro::count();
+        
+        if ($totalEliminados === 0) {
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No hay registros para eliminar'
+                ]);
+            }
+            return redirect()->route('registros.reporte')->with('error', 'No hay registros para eliminar');
+        }
+        
+        // Truncar la tabla
+        Registro::truncate();
+        
+        // Log de la acción
+        \Illuminate\Support\Facades\Log::info('Tabla registros truncada por: ' . session('user_nombre'), [
+            'usuario' => session('user_usuario'),
+            'registros_eliminados' => $totalEliminados
+        ]);
+        
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => "Se han eliminado {$totalEliminados} registros correctamente"
+            ]);
+        }
+        
+        return redirect()->route('registros.reporte')->with('success', "Se han eliminado {$totalEliminados} registros correctamente");
     }
 }
