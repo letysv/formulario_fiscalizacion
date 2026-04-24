@@ -11,8 +11,31 @@
 <body class="bg-gray-100">
     <div class="container mx-auto px-4 py-8">
         <div class="max-w-2xl mx-auto bg-white rounded-lg shadow-md p-6">
-            <h1 class="text-2xl font-bold mb-6">Formulario de Registro</h1>
-            <p class="font-bold mb-6">"Veracruz y la Fiscalización: Capacitación por una Gestión Responsable 2026"</p> <br>
+            <div class="mb-6">
+                <!-- Fila de logos y título -->
+                <div class="flex items-center justify-between mb-2">
+                    <!-- Logo izquierdo -->
+                    <div class="w-16 h-16 flex items-center justify-center">
+                        <img src="{{ asset('images/logo PODER LEGISLATIVO.png') }}" alt="Poder Legislativo" class="max-h-16 w-auto" onerror="this.style.display='none'">
+                    </div>
+        
+                    <!-- Título centrado -->
+                    <h1 class="text-2xl font-bold text-center flex-1">Formulario de Registro</h1>
+        
+                    <!-- Logo derecho -->
+                    <div class="w-16 h-16 flex items-center justify-center">
+                        <img src="{{ asset('images/LOGO LXVII SLOGAN.png') }}" alt="Congreso Legislatura" class="max-h-16 w-auto" onerror="this.style.display='none'">
+                    </div>
+                </div>
+    
+                <!-- Subtítulo centrado -->
+                <p class="text-center font-bold text-gray-700 mb-3">
+                    "Veracruz y la Fiscalización: Capacitación por una Gestión Responsable 2026"
+                </p>
+    
+                <!-- Línea decorativa -->
+                <div class="h-1 rounded" style="background: linear-gradient(to right, #722F37, #4A1C21, #722F37);"></div>
+            </div>
             
             @if(session('success'))
                 <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
@@ -105,11 +128,9 @@
                     <div id="correoInstError" class="text-red-500 text-xs hidden">⚠️ Ingrese un correo electrónico válido (ejemplo@dominio.com)</div>
                 </div>
                 
-                <div class="flex justify-between items-center">
-                    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">
-                        Guardar Registro
-                    </button>
-                </div>
+                <button type="submit" class="bg-red-800 hover:bg-red-900 text-white px-4 py-2 rounded-lg transition duration-200">
+                    Guardar Registro
+                </button>
             </form>
         </div>
     </div>
@@ -146,7 +167,6 @@
             
             // Validación en tiempo real para teléfono celular
             $('#telefono').on('input', function() {
-                // Eliminar cualquier caracter que no sea número
                 this.value = this.value.replace(/[^0-9]/g, '');
                 
                 if(this.value.length > 0 && this.value.length !== 10) {
@@ -216,25 +236,21 @@
                 let isValid = true;
                 let errorMessage = '';
                 
-                // Validar teléfono celular
                 if(!/^\d{10}$/.test(telefono)) {
                     errorMessage += '❌ El teléfono celular debe tener exactamente 10 dígitos numéricos.\n';
                     isValid = false;
                 }
                 
-                // Validar teléfono de oficina
                 if(telefonoOfi && !/^\d{10}$/.test(telefonoOfi)) {
                     errorMessage += '❌ El teléfono de oficina debe tener exactamente 10 dígitos numéricos.\n';
                     isValid = false;
                 }
                 
-                // Validar correo personal
                 if(!validarEmail(correoPersonal)) {
                     errorMessage += '❌ El correo personal no es válido. Debe tener el formato: nombre@dominio.com\n';
                     isValid = false;
                 }
                 
-                // Validar correo institucional
                 if(!validarEmail(correoInst)) {
                     errorMessage += '❌ El correo institucional no es válido. Debe tener el formato: nombre@dominio.com\n';
                     isValid = false;
